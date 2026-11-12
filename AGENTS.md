@@ -47,7 +47,26 @@ instead of making it yourself.
 4. When done: tick the task, move it to "Done", and note anything others need to know.
 5. Never commit secrets. Use `.env` (ignored) and keep `.env.example` current.
 
-Subagents are fine for independent side work (tests, research, review, parallel edits inside your own area). Do not let them touch other areas.
+## Subagents
+
+Delegate to a subagent (if your tool supports them) instead of doing everything in your own context:
+
+- **Tests:** after a feature works, have a subagent write tests for it.
+- **Review:** before every commit, have a subagent review your diff for bugs, leftover debug code, secrets and edits outside your area.
+- **Research:** when you must read many files or docs to answer one question, have a subagent do the reading and report back briefly.
+- **Parallel work:** independent tasks inside your own area (e.g. several unrelated files) can run in parallel subagents.
+
+Rules:
+- Give the subagent a complete task description: goal, relevant files, constraints, how you will judge the result. It does not see this conversation.
+- Subagents work only inside your own area (see Ownership) and follow every rule in this file.
+- You stay responsible: read the result, check the diff, and only then commit.
+- Do not use a subagent for small tasks you can finish faster yourself.
+
+Predefined subagents (Claude Code, in `.claude/agents/`):
+- `tester` - writes and runs tests. Uses a faster, cheaper model (`sonnet`).
+- `reviewer` - read-only review of the uncommitted diff. Uses the same model as your session (`inherit`).
+
+Model choice: use a cheaper/faster model for tests, research and file reading; use your strongest model for review, architecture and decisions. Do not delegate decisions to subagents. Codex users: `.claude/agents/` is Claude Code only; follow the same rules with your own tool's mechanism.
 
 ## Definition of done
 
