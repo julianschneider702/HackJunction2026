@@ -28,3 +28,8 @@ Three people, three areas, one shared contract. Rules for humans and agents are 
 | 8-32 | Features, merge into `main` hourly |
 | 32-40 | Feature freeze, polish, bug fixes, demo flow |
 | 40-48 | Pitch, backup demo video, rehearsal |
+
+## Resources
+
+- Intel Physical AI Studio (official repo): https://github.com/open-edge-platform/physical-ai-studio
+- Junction 2026 challenge guide (branch `junction2026`): https://github.com/open-edge-platform/physical-ai-studio/blob/junction2026/JUNCTION2026.md
