@@ -1,0 +1,209 @@
+[
+  {
+    "project": {
+      "id": "857e9ecc-23bc-495f-ad0a-296dd2505dbd",
+      "name": "HackJunktion2026",
+      "updated_at": "2026-11-13T22:15:54Z",
+      "created_at": "2026-11-13T22:15:54Z",
+      "datasets": []
+    },
+    "robots": [
+      {
+        "id": "ab5a3512-8a74-4a6b-a323-16455804e97c",
+        "created_at": "2026-11-13T22:38:02Z",
+        "updated_at": "2026-11-13T22:38:02Z",
+        "name": "SO101 Follower",
+        "type": "SO101_Follower",
+        "payload": {
+          "connection_string": "/dev/cu.usbmodem5B3D0456871",
+          "serial_number": "",
+          "unit": "normalized",
+          "calibration": {
+            "shoulder_pan": {
+              "id": 1,
+              "drive_mode": 0,
+              "homing_offset": 1071,
+              "range_min": 738,
+              "range_max": 3454
+            },
+            "shoulder_lift": {
+              "id": 2,
+              "drive_mode": 0,
+              "homing_offset": 831,
+              "range_min": 697,
+              "range_max": 3248
+            },
+            "elbow_flex": {
+              "id": 3,
+              "drive_mode": 0,
+              "homing_offset": 1741,
+              "range_min": 961,
+              "range_max": 3165
+            },
+            "wrist_flex": {
+              "id": 4,
+              "drive_mode": 0,
+              "homing_offset": -1989,
+              "range_min": 868,
+              "range_max": 3284
+            },
+            "wrist_roll": {
+              "id": 5,
+              "drive_mode": 0,
+              "homing_offset": -408,
+              "range_min": 165,
+              "range_max": 3995
+            },
+            "gripper": {
+              "id": 6,
+              "drive_mode": 0,
+              "homing_offset": 2033,
+              "range_min": 2034,
+              "range_max": 3523
+            }
+          }
+        }
+      },
+      {
+        "id": "52635ec0-c3b3-4933-8562-1e2e5faefda2",
+        "created_at": "2026-11-13T22:43:11Z",
+        "updated_at": "2026-11-13T22:43:11Z",
+        "name": "SO101 Leader",
+        "type": "SO101_Leader",
+        "payload": {
+          "connection_string": "/dev/cu.usbmodem5B910444031",
+          "serial_number": "",
+          "unit": "normalized",
+          "calibration": {
+            "shoulder_pan": {
+              "id": 1,
+              "drive_mode": 0,
+              "homing_offset": -1486,
+              "range_min": 703,
+              "range_max": 3419
+            },
+            "shoulder_lift": {
+              "id": 2,
+              "drive_mode": 0,
+              "homing_offset": -1782,
+              "range_min": 739,
+              "range_max": 3290
+            },
+            "elbow_flex": {
+              "id": 3,
+              "drive_mode": 0,
+              "homing_offset": 867,
+              "range_min": 911,
+              "range_max": 3115
+            },
+            "wrist_flex": {
+              "id": 4,
+              "drive_mode": 0,
+              "homing_offset": 1159,
+              "range_min": 777,
+              "range_max": 3193
+            },
+            "wrist_roll": {
+              "id": 5,
+              "drive_mode": 0,
+              "homing_offset": -1293,
+              "range_min": 265,
+              "range_max": 4095
+            },
+            "gripper": {
+              "id": 6,
+              "drive_mode": 0,
+              "homing_offset": 1554,
+              "range_min": 2036,
+              "range_max": 3299
+            }
+          }
+        }
+      }
+    ],
+    "cameras": [
+      {
+        "id": "af7cd23f-8ebc-48f6-9e05-cacfba0e7288",
+        "driver": "usb_camera",
+        "created_at": "2026-11-13T23:06:40Z",
+        "updated_at": "2026-11-13T23:06:40Z",
+        "name": "webcam",
+        "fingerprint": {
+          "uuid": "0x11420001bcf0060"
+        },
+        "hardware_name": "Webcam",
+        "payload": {
+          "width": 640,
+          "height": 480,
+          "fps": 30,
+          "exposure": null,
+          "gain": null
+        }
+      },
+      {
+        "id": "3eb640b1-f231-4750-8b83-71f71ff1dc1f",
+        "driver": "usb_camera",
+        "created_at": "2026-11-13T23:07:14Z",
+        "updated_at": "2026-11-13T23:07:14Z",
+        "name": "wrist",
+        "fingerprint": {
+          "uuid": "0x114300005a39230"
+        },
+        "hardware_name": "USB2.0_CAM1",
+        "payload": {
+          "width": 640,
+          "height": 480,
+          "fps": 15,
+          "exposure": null,
+          "gain": null
+        }
+      },
+      {
+        "id": "10da3a6a-e1af-41a2-82dd-1fa45395eb90",
+        "driver": "usb_camera",
+        "created_at": "2026-11-13T23:08:10Z",
+        "updated_at": "2026-11-13T23:08:10Z",
+        "name": "realsense",
+        "fingerprint": {
+          "uuid": "0x124100080860ad3"
+        },
+        "hardware_name": "Intel(R) RealSense(TM) Depth Camera 415  Depth",
+        "payload": {
+          "width": 640,
+          "height": 480,
+          "fps": 30,
+          "exposure": null,
+          "gain": null
+        }
+      }
+    ],
+    "environments": [
+      {
+        "id": "86ad5553-01ee-4bfa-bad7-7ad80db867c6",
+        "created_at": "2026-11-13T22:44:35Z",
+        "updated_at": "2026-11-13T22:44:35Z",
+        "name": "SO101 Teleop",
+        "robots": [
+          {
+            "robot_id": "ab5a3512-8a74-4a6b-a323-16455804e97c",
+            "tele_operator": {
+              "type": "robot",
+              "robot_id": "52635ec0-c3b3-4933-8562-1e2e5faefda2"
+            }
+          }
+        ],
+        "cameras": [
+          {
+            "camera_id": "10da3a6a-e1af-41a2-82dd-1fa45395eb90"
+          },
+          {
+            "camera_id": "3eb640b1-f231-4750-8b83-71f71ff1dc1f"
+          },
+          {
+            "camera_id": "af7cd23f-8ebc-48f6-9e05-cacfba0e7288"
+          }
+        ]
+      }
+    ]
+  }
+]

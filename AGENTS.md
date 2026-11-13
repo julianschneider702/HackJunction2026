@@ -18,6 +18,7 @@ One owner per directory. Work only in your own area.
 | Backend / core logic | `backend/` | Julian | Claude |
 | Frontend / UI | `frontend/` | Tobby | Claude |
 | Infra, tests, glue, deploy | `infra/`, `tests/` | Samuel | Codex |
+| Robot station state (Studio DB, calibration, datasets) | `robot/` | Tobby | Claude |
 | Shared contract | `docs/CONTRACT.md` | whole team | any |
 
 Adjust the table once areas are decided. Do not edit files outside your area.
