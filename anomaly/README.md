@@ -37,6 +37,20 @@ python anomaly/train.py --data D:\bricks-data --export        # also export to O
 
 For each model the script trains, tests, and prints the anomaly score per test image, sorted, with the highest good and lowest defect score. If the highest good score is below the lowest defect score, a threshold between them separates the classes cleanly.
 
+## Sort new images (`sort_defects.py`)
+
+Trains on `good/` only, then checks every image in `test_good/` and moves the ones flagged as defect into `defect/`. The threshold comes from part of `good/` that Anomalib holds back (normalised to 0.5); `defect/` is never used for training.
+
+```powershell
+python anomaly/sort_defects.py train --data D:\bricks-data            # learn from good/, save <data>/model_padim.ckpt
+python anomaly/sort_defects.py check --data D:\bricks-data --dry-run  # show scores, move nothing
+python anomaly/sort_defects.py check --data D:\bricks-data            # move flagged images to defect/
+```
+
+- `--threshold 0.6` raises the limit (fewer images flagged), `--copy` copies instead of moving.
+- `--model patchcore` switches the model; use the same value for `train` and `check`.
+- Tested on Linux with Anomalib 2.7.0: 77 good images (478x423 screenshots), PaDiM trains in a few seconds on CPU.
+
 ## Notes
 
 - First run downloads a pretrained backbone, so it needs internet.
