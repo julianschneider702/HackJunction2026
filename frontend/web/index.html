@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inspection Cell</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <h1>Inspection Cell</h1>
+      <p>SO-101 · Anomalib · VLA policy · Intel Core Ultra</p>
+    </div>
+    <div class="status">
+      <span class="badge" id="demo" hidden>Demo data</span>
+      <span class="state" id="state"><i></i><span id="state-text">Connecting</span></span>
+    </div>
+  </header>
+
+  <main>
+    <section class="phase" aria-label="Current step">
+      <ol id="steps"></ol>
+      <div class="phase-now" id="phase-now"></div>
+    </section>
+
+    <section class="kpis" id="kpis" aria-label="Key figures"></section>
+
+    <div class="row">
+      <section class="card">
+        <h2>Cycle time <span class="unit">s per brick</span></h2>
+        <div class="chart" id="chart-cycles"></div>
+      </section>
+      <section class="card" id="card-scores">
+        <h2>Anomaly score <span class="unit">per brick</span>
+          <span class="legend"><i class="dot-good"></i>Good <i class="dot-bad"></i>Defective</span></h2>
+        <div class="chart" id="chart-scores"></div>
+      </section>
+    </div>
+
+    <div class="row">
+      <section class="card">
+        <h2>Hardware</h2>
+        <div class="devices" id="devices"></div>
+        <div class="system" id="system"></div>
+      </section>
+      <section class="card">
+        <h2>Recent bricks</h2>
+        <div id="recent"></div>
+      </section>
+    </div>
+
+    <section class="card" id="card-bench" hidden>
+      <h2>Device comparison <span class="unit">latency per inference</span></h2>
+      <div id="bench"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

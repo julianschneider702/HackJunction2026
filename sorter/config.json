@@ -1,0 +1,65 @@
+{
+  "project_id": "857e9ecc-23bc-495f-ad0a-296dd2505dbd",
+  "environment_id": "c87de068-b6bf-45f8-9a94-1cff921959e5",
+  "model": null,
+  "backend": "torch",
+  "device": "auto",
+  "pick_task": "put the brick in the yellow bowl",
+  "direct_pick_task": null,
+  "speed": {
+    "move": 40.0,
+    "carry": 28.0,
+    "inspect": 30.0
+  },
+  "gripper": {
+    "open": 35.0,
+    "close": 0.0,
+    "policy_closed_cmd": 8.0,
+    "holding_margin": 0.8
+  },
+  "pick": {
+    "timeout_s": 25.0,
+    "after_grasp_s": 0.5,
+    "settle_s": 0.25,
+    "max_attempts": 3,
+    "lift_shoulder": -20.0,
+    "hz": 30
+  },
+  "inspect": {
+    "roll": [
+      -95,
+      -68,
+      -41,
+      -14,
+      13,
+      40,
+      67,
+      94
+    ],
+    "flex_offsets": [
+      0
+    ],
+    "settle_s": 0.3,
+    "frames": 3,
+    "hits_needed": 2
+  },
+  "wrist_check": {
+    "frames": 3,
+    "hits_needed": 2,
+    "brick_diff": 30
+  },
+  "scan": {
+    "frames": 5,
+    "hits_needed": 3,
+    "same_place_px": 25
+  },
+  "place": {
+    "hull_margin_px": 35,
+    "bowl_max_age_s": 4.0,
+    "wait_bowl_s": 30.0,
+    "replan_px": 20
+  },
+  "max_bricks": 100,
+  "max_empty_in_row": 3,
+  "vision": {}
+}

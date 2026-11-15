@@ -1,9 +1,10 @@
-"""Train on good bricks, check test_good/, move every image flagged as defect into defect/.
+"""Train on good bricks, check test_good/ and print a score per image.
+Images are only moved into defect/ with --move (default: nothing is moved).
 
 Expected folders under --data:
     good/        training images, good bricks only
     test_good/   images to check (the model sorts these)
-    defect/      images flagged as defect are moved here (created if missing)
+    defect/      with --move, images flagged as defect are moved here
 
 The threshold comes from good images only: Anomalib holds back part of good/ and
 uses the highest anomaly score among those as the limit (normalised to 0.5).
@@ -14,9 +15,10 @@ Usage:
     python sort_defects.py check --data D:/bricks-data   # use saved model, sort test_good/
     python sort_defects.py --data D:/bricks-data         # both in one go
 Options:
-    --model patchcore     other model (train and check must use the same one)
-    --dry-run             only show, move nothing
+    --model dinomaly      other model: padim, patchcore, anomalydino, dinomaly (train and check must match)
+    --move                really move flagged images into defect/ (default: only show)
     --threshold 0.6       higher limit = fewer defects
+    --device cpu          force CPU (default: Intel GPU/XPU if available)
 The trained model is saved as <data>/model_<name>.ckpt.
 """
 
@@ -26,9 +28,32 @@ from pathlib import Path
 
 from anomalib.data import Folder, PredictDataset
 from anomalib.engine import Engine
-from anomalib.models import Padim, Patchcore
+from anomalib.models import AnomalyDINO, Dinomaly, Padim, Patchcore
 
-MODELS = {"padim": Padim, "patchcore": Patchcore}
+
+def anomalydino():
+    """AnomalyDINO with DINOv2 ViT-B at 448 px: no gradient training, one pass over good/."""
+    return AnomalyDINO(encoder_name="vit_base_patch14_reg4_dinov2",
+                       pre_processor=AnomalyDINO.configure_pre_processor(image_size=(448, 448)))
+
+
+MODELS = {"padim": Padim, "patchcore": Patchcore, "anomalydino": anomalydino, "dinomaly": Dinomaly}
+# models that train by gradient steps need a step budget (Dinomaly paper: 5000)
+TRAIN_ARGS = {"dinomaly": {"max_steps": 5000}}
+
+
+def make_engine(device: str, **kwargs) -> Engine:
+    """Engine on the Intel GPU (XPU) if available, otherwise CPU. Lightning's 'auto' never picks XPU."""
+    if device == "auto":
+        import torch
+        device = "xpu" if hasattr(torch, "xpu") and torch.xpu.is_available() else "cpu"
+    print(f"device: {device}")
+    if device == "xpu":
+        from anomalib.engine import SingleXPUStrategy
+        return Engine(accelerator="xpu", strategy=SingleXPUStrategy(), **kwargs)
+    return Engine(accelerator="cpu", **kwargs)
+
+
 IMAGE_EXT = {".jpg", ".jpeg", ".png", ".bmp"}
 
 
@@ -45,7 +70,7 @@ def unique_target(folder: Path, name: str) -> Path:
     return target
 
 
-def train(root: Path, name: str) -> Path:
+def train(root: Path, name: str, device: str) -> Path:
     n_good = len(images_in(root / "good"))
     if n_good < 5:
         raise SystemExit(f"{root / 'good'}: only {n_good} images, need at least 5 (better 30+).")
@@ -53,7 +78,7 @@ def train(root: Path, name: str) -> Path:
     # Anomalib splits off part of good/ for validation and threshold
     datamodule = Folder(name="bricks", root=root, normal_dir="good", num_workers=0)
     model = MODELS[name]()
-    engine = Engine()
+    engine = make_engine(device, **TRAIN_ARGS.get(name, {}))
     engine.fit(datamodule=datamodule, model=model)
     saved = root / f"model_{name}.ckpt"
     shutil.copy2(engine.best_model_path, saved)
@@ -61,7 +86,7 @@ def train(root: Path, name: str) -> Path:
     return saved
 
 
-def check(root: Path, name: str, threshold: float, copy: bool, dry_run: bool):
+def check(root: Path, name: str, threshold: float, copy: bool, move: bool, device: str):
     test_dir, defect_dir = root / "test_good", root / "defect"
     saved = root / f"model_{name}.ckpt"
     if not saved.exists():
@@ -72,7 +97,7 @@ def check(root: Path, name: str, threshold: float, copy: bool, dry_run: bool):
     print(f"checking {len(to_check)} images in {test_dir} with {saved.name}")
 
     results = []
-    for batch in Engine().predict(model=MODELS[name](), dataset=PredictDataset(path=test_dir),
+    for batch in make_engine(device).predict(model=MODELS[name](), dataset=PredictDataset(path=test_dir),
                                   ckpt_path=str(saved)):
         for path, score in zip(batch.image_path, batch.pred_score):
             results.append((float(score), Path(path)))
@@ -83,8 +108,8 @@ def check(root: Path, name: str, threshold: float, copy: bool, dry_run: bool):
     for score, path in results:
         print(f"{score:.3f}  {'DEFECT' if score > threshold else 'ok    '}  {path.name}")
 
-    if dry_run:
-        print(f"\n{len(defects)} of {len(results)} would be flagged as defect (dry run, nothing moved).")
+    if not move:
+        print(f"\n{len(defects)} of {len(results)} flagged as defect (nothing moved, use --move to sort).")
         return
     defect_dir.mkdir(parents=True, exist_ok=True)
     for _, path in defects:
@@ -100,15 +125,17 @@ def main():
     parser.add_argument("--model", default="padim", choices=MODELS)
     parser.add_argument("--threshold", type=float, default=0.5,
                         help="normalised score limit, above it = defect (default 0.5)")
-    parser.add_argument("--copy", action="store_true", help="copy instead of move")
-    parser.add_argument("--dry-run", action="store_true", help="only print the result, move nothing")
+    parser.add_argument("--move", action="store_true", help="move flagged images into defect/")
+    parser.add_argument("--copy", action="store_true", help="with --move: copy instead of move")
+    parser.add_argument("--device", default="auto", choices=["auto", "xpu", "cpu"],
+                        help="auto = Intel GPU (XPU) if available, else CPU")
     args = parser.parse_args()
 
     root = Path(args.data)
     if args.mode in ("train", "all"):
-        train(root, args.model)
+        train(root, args.model, args.device)
     if args.mode in ("check", "all"):
-        check(root, args.model, args.threshold, args.copy, args.dry_run)
+        check(root, args.model, args.threshold, args.copy, args.move or args.copy, args.device)
 
 if __name__ == "__main__":
     main()

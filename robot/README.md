@@ -76,6 +76,77 @@ git add robot && git commit -m "robot: <what changed>"
 GitHub rejects files over 100 MB; the export script skips those and lists them. Push large
 datasets to the Hugging Face Hub instead (Studio's dataset export, or `huggingface-cli upload`).
 
+## Growing the dataset from the policy's own successes
+
+`scripts/record_successes_gui.py` runs a trained model on the arm through Studio's runtime
+session (the same websocket the Studio UI uses) and records every cycle as an episode. A person
+judges each cycle: **Richtig** saves the episode into the Studio dataset, **Falsch** discards it.
+Retraining on that dataset in Studio then includes the policy's own successful cycles.
+`scripts/record_successes.py` is the same loop in the terminal (and holds the shared code).
+
+The page (http://localhost:8790) shows the live cameras, one start button per task, the
+Richtig/Falsch buttons (keys `J` / `N`), a stop button (space) and the success rate.
+
+Both tools also report to the **dashboard** (`frontend/hub.py`, see `frontend/README.md`) when it runs:
+every cycle with its task, duration, your verdict and a camera image, plus which device the model
+runs on. The dashboard's Stop button aborts the running cycle and holds the arm, and no new cycle
+starts until Resume. Options: `--dashboard off` (report nothing), `--dashboard <url>`,
+`--dashboard-camera wrist` (which camera's image to send; default: the first). The bowl is read from
+the task text ("good" / "defective", "gut" / "defekt"); a task that names neither still counts as a
+cycle, only without a bowl. Give `--device CPU`, `GPU` or `NPU` instead of `auto`, otherwise the
+dashboard cannot show where the model runs.
+
+### Instructions for the agent on the Intel laptop
+
+Preconditions, check them in this order:
+
+1. The Studio backend runs (http://localhost:7860) and a **trained model with at least one export**
+   exists in *this* machine's Studio (Models page). A model trained from another machine is not
+   there automatically.
+2. The environment is **closed in the Studio UI** (leave the recording / run-model screen).
+   Only one runtime session can hold the arm and the cameras.
+3. The arms' ports and the cameras are set for this machine (see "Use it on another machine").
+   Do **not** run the calibration wizard.
+
+Run it with Studio's own Python environment, because it needs the `websockets` package from there.
+From `physical-ai-studio/application/backend`, with the same `--extra` you start Studio with
+(another extra would reinstall packages):
+
+```bash
+# 1) dry check: prints project, environment, model, dataset and tasks; touches no device
+uv run --extra xpu python ../../../HackJunction2026/robot/scripts/record_successes.py --check
+# 2) the GUI
+uv run --extra xpu python ../../../HackJunction2026/robot/scripts/record_successes_gui.py
+```
+
+Adjust the relative path if the repos are not siblings. On the Mac the interpreter is
+`~/.venvs/physicalai-studio/bin/python` instead of `uv run ... python`.
+
+Options (both scripts): `--model`, `--dataset`, `--backend` (default `openvino` if exported),
+`--device` (default `auto`; use the device names Studio offers in its Run model dialog),
+`--task` (repeatable; default: the tasks of the model's dataset), `--max-seconds` (default 60,
+then the arm stops and the episode is discarded), `--port` (GUI only).
+
+Rules:
+
+- **Never start the GUI without a person at the arm.** It moves the robot. Starting a cycle and
+  judging it is the person's job; do not click the buttons or send the websocket actions yourself.
+  `--check` is always safe.
+- End it with **Beenden** in the page or Ctrl+C, and wait for "Fertig". Only then are the episodes
+  copied into the dataset. Killing the process during "Schreibe das Dataset zurück" can lose the dataset.
+- Default dataset is the one the model was trained on. Back it up first (Studio: dataset download,
+  or `scripts/export_studio_state.py`). Single episodes can be deleted again in Studio.
+- If `--check` says "Kein(e) Modell im Studio gefunden", training has not finished or the model
+  lives in another machine's Studio. If a command is refused with a camera or robot claim error,
+  the environment is still open in the Studio UI.
+- Every cycle is appended to `robot/logs/success_recordings.jsonl`
+  (`time`, `task`, `result` = `saved` / `wrong` / `aborted` / `timeout` / `failed`, `duration_s`,
+  `model`, `dataset`, `episode_index` for saved ones). The same cycles go live to the dashboard
+  (`saved`, `wrong` and `timeout` count as bricks there; `aborted` and `failed` do not).
+- Not tested on the real arm yet (2026-11-15): only against a fake Studio server on the Mac,
+  including the dashboard reporting and the dashboard's Stop button.
+  Do the first real cycle with a hand near the power supply.
+
 ## Machine notes (macOS dev Mac)
 
 - Homebrew there runs under Rosetta, so `uv` and Node 24 are native arm64 installs in `~/.local`; the Studio venv is `~/.venvs/physicalai-studio`.

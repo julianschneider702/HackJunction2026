@@ -1,0 +1,56 @@
+{
+ "zeit": "2026-11-15 00:52:56",
+ "einheit": "normalized (Studio), grad = Grad ab Mitte des kalibrierten Bereichs",
+ "state": {
+  "shoulder_pan": {
+   "normalized": -3.6,
+   "grad": -4.3
+  },
+  "shoulder_lift": {
+   "normalized": 5.86,
+   "grad": 6.1
+  },
+  "elbow_flex": {
+   "normalized": 63.28,
+   "grad": 65.9
+  },
+  "wrist_flex": {
+   "normalized": -49.73,
+   "grad": -51.8
+  },
+  "wrist_roll": {
+   "normalized": -61.18,
+   "grad": -103.5
+  },
+  "gripper": {
+   "normalized": 2.42,
+   "grad": null
+  }
+ },
+ "action": {
+  "shoulder_pan": {
+   "normalized": -3.45,
+   "grad": -4.1
+  },
+  "shoulder_lift": {
+   "normalized": 5.36,
+   "grad": 5.6
+  },
+  "elbow_flex": {
+   "normalized": 62.77,
+   "grad": 65.3
+  },
+  "wrist_flex": {
+   "normalized": -49.98,
+   "grad": -52.1
+  },
+  "wrist_roll": {
+   "normalized": -61.18,
+   "grad": -103.5
+  },
+  "gripper": {
+   "normalized": 2.03,
+   "grad": null
+  }
+ }
+}

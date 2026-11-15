@@ -1,0 +1,15 @@
+#!/bin/bash
+# Run a script with the Python of Physical AI Studio's backend (it has OpenCV, torch, Anomalib and the
+# Studio modules the tools here import).
+#   station/studio-python sorter/policy_sort.py
+# Studio is expected next to this repo (../physical-ai-studio); set PHYSICAL_AI_STUDIO to use another checkout.
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
+STUDIO="${PHYSICAL_AI_STUDIO:-$REPO/../physical-ai-studio}"
+PY="$STUDIO/application/backend/.venv/bin/python"
+if [ ! -x "$PY" ]; then
+  echo "Studio's Python not found: $PY" >&2
+  echo "Install Physical AI Studio next to this repo or set PHYSICAL_AI_STUDIO=<path to physical-ai-studio>." >&2
+  exit 1
+fi
+# Qt and torchao print harmless warnings on every start; hide them
+exec "$PY" "$@" 2> >(grep -v "QFont\|Qt no longer\|XDG_SESSION\|torchao" >&2)

@@ -1,0 +1,100 @@
+{
+  "leader": {
+    "connection_string": "/dev/ttyACM1",
+    "serial_number": "5B91044403",
+    "unit": "normalized",
+    "calibration": {
+      "shoulder_pan": {
+        "id": 1,
+        "drive_mode": 0,
+        "homing_offset": -1486,
+        "range_min": 703,
+        "range_max": 3419
+      },
+      "shoulder_lift": {
+        "id": 2,
+        "drive_mode": 0,
+        "homing_offset": -1782,
+        "range_min": 739,
+        "range_max": 3290
+      },
+      "elbow_flex": {
+        "id": 3,
+        "drive_mode": 0,
+        "homing_offset": 867,
+        "range_min": 911,
+        "range_max": 3115
+      },
+      "wrist_flex": {
+        "id": 4,
+        "drive_mode": 0,
+        "homing_offset": 1159,
+        "range_min": 777,
+        "range_max": 3193
+      },
+      "wrist_roll": {
+        "id": 5,
+        "drive_mode": 0,
+        "homing_offset": -1293,
+        "range_min": 265,
+        "range_max": 4095
+      },
+      "gripper": {
+        "id": 6,
+        "drive_mode": 0,
+        "homing_offset": 1554,
+        "range_min": 2036,
+        "range_max": 3299
+      }
+    }
+  },
+  "follower": {
+    "connection_string": "/dev/ttyACM0",
+    "serial_number": "5B3D045687",
+    "unit": "normalized",
+    "calibration": {
+      "shoulder_pan": {
+        "id": 1,
+        "drive_mode": 0,
+        "homing_offset": 1068,
+        "range_min": 748,
+        "range_max": 3470
+      },
+      "shoulder_lift": {
+        "id": 2,
+        "drive_mode": 0,
+        "homing_offset": 765,
+        "range_min": 822,
+        "range_max": 3193
+      },
+      "elbow_flex": {
+        "id": 3,
+        "drive_mode": 0,
+        "homing_offset": 1835,
+        "range_min": 722,
+        "range_max": 3091
+      },
+      "wrist_flex": {
+        "id": 4,
+        "drive_mode": 0,
+        "homing_offset": -1924,
+        "range_min": 784,
+        "range_max": 3155
+      },
+      "wrist_roll": {
+        "id": 5,
+        "drive_mode": 0,
+        "homing_offset": -431,
+        "range_min": 183,
+        "range_max": 4032
+      },
+      "gripper": {
+        "id": 6,
+        "drive_mode": 0,
+        "homing_offset": 2032,
+        "range_min": 2027,
+        "range_max": 3557
+      }
+    }
+  }
+}
