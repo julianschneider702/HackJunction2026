@@ -1,59 +1,78 @@
-# anomaly/ - brick defect detection (Anomalib)
+# anomaly/ - brick defect detection with Anomalib
 
-Trains Anomalib models on **good bricks only** and scores how far a new brick deviates. Images stay on the machine that trains; they are not committed.
+Trains [Anomalib](https://github.com/open-edge-platform/anomalib) models on **good bricks only** and scores
+how far a new image deviates. Defective bricks are never used for training, only for checking the result.
 
-> `train.py` has not been run yet. The Anomalib calls follow the API of the installed version (2.7.0), but expect small fixes on the first real run.
+Images and checkpoints stay on the machine that trains. They are not committed.
 
-## Setup (Windows, station laptop)
+## Scripts
 
-```powershell
-uv venv --python 3.11 anomalib-env
-anomalib-env\Scripts\activate
+| Script | What it does |
+|---|---|
+| `sort_defects.py` | Trains one model on `good/`, saves it, and scores the images in `test_good/` |
+| `show_scores.py` | Scores images with a saved model and shows them in an HTML page with score and verdict |
+| `train.py` | Trains PaDiM and PatchCore side by side, prints the score per test image, optional OpenVINO export |
+
+Models available in `sort_defects.py` and `show_scores.py`: `padim`, `patchcore`, `anomalydino`, `dinomaly`.
+The inspection loop in [`sorter/`](../sorter/README.md) uses **AnomalyDINO** (DINOv2 ViT-B, 448 px).
+
+## Setup
+
+Anomalib gets its own Python environment, separate from Physical AI Studio:
+
+```bash
+uv venv --python 3.11 ~/anomalib-env
+source ~/anomalib-env/bin/activate          # Windows: anomalib-env\Scripts\activate
 uv pip install "anomalib[openvino,cpu]"
 ```
+
+The first run downloads a pretrained backbone, so it needs internet.
 
 ## Image folders (outside the repo)
 
 ```
 bricks-data/
-  good/        training images, good bricks only (about 30-40)
-  test_good/   good bricks NOT in good/ (about 10)
-  defect/      defective bricks, evaluation only (about 15-20)
+  good/        training images, good bricks only
+  test_good/   good bricks that are NOT in good/
+  defect/      defective bricks, for evaluation only
 ```
 
 - `.jpg` or `.png`, file names do not matter.
-- Same camera position and lighting for all images, crop tightly around the brick.
+- Same camera position and lighting for all images.
 - Include variation in `good/`: position, rotation, brick upside down.
-- Defect images are never used for training.
-- Keep a separate set of images aside that is not used for choosing the threshold, and check once with it at the end.
+- Capture images with the tools in `inspection/`.
 
-## Run
+## Train and check
 
-```powershell
-python anomaly/train.py --data D:\bricks-data                 # PaDiM, then PatchCore
-python anomaly/train.py --data D:\bricks-data --models padim  # one model only
-python anomaly/train.py --data D:\bricks-data --export        # also export to OpenVINO
+```bash
+python anomaly/sort_defects.py train --data ~/bricks-data --model anomalydino   # saves <data>/model_anomalydino.ckpt
+python anomaly/sort_defects.py check --data ~/bricks-data --model anomalydino   # scores test_good/, moves nothing
+python anomaly/show_scores.py        --data ~/bricks-data --model anomalydino   # HTML page for test_good/ and defect/
 ```
 
-For each model the script trains, tests, and prints the anomaly score per test image, sorted, with the highest good and lowest defect score. If the highest good score is below the lowest defect score, a threshold between them separates the classes cleanly.
+- The threshold comes from good images only: Anomalib holds back part of `good/` and normalises the
+  score so that 0.5 is the limit. `--threshold 0.6` raises the limit (fewer images flagged).
+- `check --move` moves flagged images into `defect/`, `--move --copy` copies them instead.
+- `--device xpu` or `--device cpu` picks the device; the default `auto` uses the Intel GPU if available.
+- Use the same `--model` for `train`, `check` and `show_scores.py`.
 
-## Sort new images (`sort_defects.py`)
+## Compare PaDiM and PatchCore
 
-Trains on `good/` only, then checks every image in `test_good/` and moves the ones flagged as defect into `defect/`. The threshold comes from part of `good/` that Anomalib holds back (normalised to 0.5); `defect/` is never used for training.
-
-```powershell
-python anomaly/sort_defects.py train --data D:\bricks-data            # learn from good/, save <data>/model_padim.ckpt
-python anomaly/sort_defects.py check --data D:\bricks-data --dry-run  # show scores, move nothing
-python anomaly/sort_defects.py check --data D:\bricks-data            # move flagged images to defect/
+```bash
+python anomaly/train.py --data ~/bricks-data                 # PaDiM, then PatchCore
+python anomaly/train.py --data ~/bricks-data --models padim  # one model only
+python anomaly/train.py --data ~/bricks-data --export        # also export to OpenVINO
 ```
 
-- `--threshold 0.6` raises the limit (fewer images flagged), `--copy` copies instead of moving.
-- `--model patchcore` switches the model; use the same value for `train` and `check`.
-- Tested on Linux with Anomalib 2.7.0: 77 good images (478x423 screenshots), PaDiM trains in a few seconds on CPU.
+For each model the script trains, tests, and prints the anomaly score per test image, sorted, with the
+highest good and the lowest defect score. If the highest good score is below the lowest defect score, a
+threshold between them separates the classes cleanly.
 
-## Notes
+Checkpoints and exports land in a `results/` folder in the directory you start the script from. That
+folder is git-ignored.
 
-- First run downloads a pretrained backbone, so it needs internet.
-- PaDiM takes about a minute and PatchCore a few minutes (rough estimates).
-- Checkpoints and exports land in a `results/` folder in the directory you start the script from, which is git-ignored.
-- Run the script from a folder outside the repo or from `anomaly/`; the ignore rules cover both.
+## Result on our station
+
+13 wrist-camera test images at threshold 0.5 with AnomalyDINO: all 8 marked bricks were flagged and none of
+the 5 clean ones. The set is small and comes from one lighting setup, so this shows that it works on our
+station, not a general accuracy.

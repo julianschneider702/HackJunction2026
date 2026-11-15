@@ -1,7 +1,7 @@
-# Interface contract
+# Interface contract: sorting loop and dashboard
 
-Single source of truth for everything shared between areas. Implement against this, do not guess.
-Change it only with team agreement, and add a line to the change log in the same commit.
+The interface between everything that produces data (sorting loop, recording tools, benchmarks, telemetry) and the live dashboard in `frontend/`.
+Every change gets a line in the change log at the end.
 
 ## Overview
 
@@ -149,5 +149,5 @@ if hub.stop_requested:                  # refreshed about four times per second
 
 | Date | Who | Change |
 |---|---|---|
-| 2026-11-15 | Tobby | Initial version: dashboard hub events, state and control endpoints (proposal, to be confirmed by the team) |
+| 2026-11-15 | Tobby | Initial version: dashboard hub events, state and control endpoints |
 | 2026-11-15 | Tobby | `cycle`: only `duration_s` required, new optional `correct`; state cycles carry the computed `correct` |

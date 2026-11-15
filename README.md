@@ -7,8 +7,6 @@ An SO-101 arm picks a Duplo brick out of a box, an anomaly model checks it for d
 in the gripper, and a vision-language-action policy drops it into the right bowl. Everything runs locally
 on the station laptop, under the stock light of the station, with no light box and no cloud at runtime.
 
-Team: Julian, Tobby, Samuel.
-
 ## How it works
 
 ```mermaid
@@ -123,6 +121,18 @@ expected at `../physical-ai-studio`; set `PHYSICAL_AI_STUDIO` to use another che
 - The policy finds the bowls only where they stood during the demonstrations.
 - Operator messages of the sorter and the on-screen labels of some station tools are in German.
 
-## Working in this repo
+## Built with
 
-Rules for people and coding agents are in [AGENTS.md](AGENTS.md), the task board in [TASKS.md](TASKS.md).
+| Tool | Used for |
+|---|---|
+| [Physical AI Studio](https://github.com/open-edge-platform/physical-ai-studio) | Teleoperation, recording demonstrations, fine-tuning and running the SmolVLA policy |
+| [Anomalib](https://github.com/open-edge-platform/anomalib) | Defect detection trained on good bricks only (AnomalyDINO; PaDiM, PatchCore and Dinomaly compared) |
+| PyTorch XPU | Policy and anomaly model on the laptop's Arc iGPU |
+| [OpenVINO](https://github.com/openvinotoolkit/openvino) | Benchmark of exported models on CPU, iGPU and NPU (`frontend/benchmark_openvino.py`) |
+| [Modal](https://modal.com) | Cloud GPU for policy fine-tuning |
+| SO-101 arms, three cameras | Follower and leader arm, top-view RealSense, inspection webcam, wrist camera |
+
+## Team
+
+Julian, Tobby and Samuel, built in 48 hours at Junction 2026. The challenge text is in
+[CHALLENGE.md](CHALLENGE.md).

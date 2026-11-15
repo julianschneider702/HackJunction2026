@@ -247,6 +247,7 @@ class ClientTests(HubServerCase):
         self.assertFalse(client.check_stop())
 
 
+@unittest.skipIf(sys.platform == "win32", "simulates Linux sysfs paths, which Windows file names do not allow")
 class SensorTests(unittest.TestCase):
     def test_rates_from_fake_sysfs(self):
         with tempfile.TemporaryDirectory() as tmp:

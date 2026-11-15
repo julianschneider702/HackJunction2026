@@ -1,7 +1,7 @@
 # frontend/ - live dashboard for the inspection cell
 
 Shows what the judges score: sorting results and accuracy, cycle time, latency per inference step,
-power and temperature, and which model runs on CPU / iGPU / NPU. Owner: Tobby.
+power and temperature, and which model runs on CPU / iGPU / NPU.
 
 Python standard library and plain HTML/JS/CSS only. Nothing to install, no build step, works offline.
 
@@ -31,7 +31,8 @@ and if demo bricks are still shown, stop the hub and delete `frontend/data/` onc
 # 1) dashboard + power / temperature / CPU, iGPU, NPU load
 bash frontend/start_laptop.sh
 
-# 2) policy runs on the arm; every cycle a person judges appears in the dashboard (see robot/README.md)
+# 2) record judged cycles: every cycle a person judges appears in the dashboard (see robot/README.md).
+#    The inspection loop reports to the dashboard too: station/studio-python sorter/policy_sort.py (see sorter/README.md)
 cd ../physical-ai-studio/application/backend
 uv run --extra xpu python ../../../HackJunction2026/robot/scripts/record_successes_gui.py --device NPU
 
@@ -48,7 +49,7 @@ What is real after these steps, and what is still missing:
 | Bricks, cycle time, throughput, accuracy, image | `robot/scripts/record_successes*.py` | tested against a stand-in Studio server, not yet on the arm |
 | Power, temperature, device load | `telemetry_linux.py` | tested with copied kernel files only; run `--once` on the laptop first |
 | Device comparison table | `benchmark_openvino.py` | ran on a Mac CPU with a small test model; GPU / NPU untested |
-| Anomaly score, heatmap, model decision | nothing sends them yet | needs the Anomalib model wired into the loop |
+| Anomaly score, heatmap, model decision, anomaly check duration | `sorter/policy_sort.py`, `sorter/anomaly_watch.py` | sent for every inspected brick |
 | Live latency per policy step | nothing sends it yet | Studio does not report it; the comparison table has the per-device latency instead |
 
 ## Files

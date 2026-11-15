@@ -1,7 +1,7 @@
 # robot/ - SO-101 station state for Physical AI Studio
 
 Everything needed to move our Physical AI Studio setup (robots, calibration, cameras,
-environment, recordings) between machines through this repo. Owner: Tobby.
+environment, recordings) between machines through this repo.
 
 Studio itself is **not** in this repo. It is the upstream project
 [open-edge-platform/physical-ai-studio](https://github.com/open-edge-platform/physical-ai-studio),
@@ -12,11 +12,11 @@ cloned next to this repo. Only Studio's *data* lives here.
 | Path | Content |
 |---|---|
 | `studio/physicalai.db` | Studio database snapshot: project `HackJunktion2026`, both arms incl. calibration, 3 cameras, environment `SO101 Teleop`, dataset/model metadata |
-| `studio/project-export.json` | Same content as readable JSON (for diffs and for agents) |
+| `studio/project-export.json` | Same content as readable JSON |
 | `studio/manifest.json` | When/where the snapshot was taken (used to rewrite paths on import) |
 | `calibration/follower.json`, `leader.json` | Current calibration per arm (LeRobot format) |
 | `calibration/matching/` | Measurements and before/after values of the leader-follower matching (see below) |
-| `datasets/` | Recorded datasets copied out of Studio (empty until we record) |
+| `datasets/` | Target folder for datasets copied out of Studio. Empty in the repo: our recordings are too large for Git |
 | `scripts/` | Export/import and arm tools (Python stdlib, except the arm tools which need the Studio venv) |
 
 ## Hardware
@@ -96,7 +96,7 @@ the task text ("good" / "defective", "gut" / "defekt"); a task that names neithe
 cycle, only without a bowl. Give `--device CPU`, `GPU` or `NPU` instead of `auto`, otherwise the
 dashboard cannot show where the model runs.
 
-### Instructions for the agent on the Intel laptop
+### Running it on the station laptop
 
 Preconditions, check them in this order:
 
@@ -143,13 +143,13 @@ Rules:
   (`time`, `task`, `result` = `saved` / `wrong` / `aborted` / `timeout` / `failed`, `duration_s`,
   `model`, `dataset`, `episode_index` for saved ones). The same cycles go live to the dashboard
   (`saved`, `wrong` and `timeout` count as bricks there; `aborted` and `failed` do not).
-- Not tested on the real arm yet (2026-11-15): only against a fake Studio server on the Mac,
+- Developed against a stand-in Studio server on a Mac (state of 2026-11-15),
   including the dashboard reporting and the dashboard's Stop button.
-  Do the first real cycle with a hand near the power supply.
+  Do the first cycle on a new setup with a hand near the power supply.
 
-## Machine notes (macOS dev Mac)
+## Notes for developing on macOS
 
 - Homebrew there runs under Rosetta, so `uv` and Node 24 are native arm64 installs in `~/.local`; the Studio venv is `~/.venvs/physicalai-studio`.
-- Start the backend from **Terminal.app** (`scripts/start-studio-backend.command`). Started from Claude or an editor, macOS never grants camera access.
+- Start the backend from **Terminal.app** (`scripts/start-studio-backend.command`). Started from an editor, macOS never grants camera access.
 - `pyrealsense2-macosx` is removed from that venv: its USB device watcher segfaults the backend on camera discovery. `uv sync` reinstalls it.
 - Backend log: `~/Library/Application Support/physicalai/logs/app.log`.
